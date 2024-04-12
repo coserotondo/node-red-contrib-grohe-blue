@@ -394,7 +394,20 @@ module.exports = function (RED) {
                                         node.applianceIds.roomId,
                                         node.applianceIds.applianceId,
                                         data);
-                                    // Hint: respsonse is not used right now.
+                                    // Hint: response is not used right now.
+                                }
+                            }
+
+                            if(node.devicetype === ondusApi.OndusType.BlueHome){
+                                if (msg.payload !== undefined && msg.payload.command !== undefined){
+                                    let data = msg.payload;
+                                    data.type = node.devicetype;
+                                    let response = await node.config.session.setApplianceCommand(
+                                        node.applianceIds.locationId,
+                                        node.applianceIds.roomId,
+                                        node.applianceIds.applianceId,
+                                        data);
+                                    // Hint: response is not used right now.
                                 }
                             }
 
@@ -444,6 +457,12 @@ module.exports = function (RED) {
                                 }
                             }
 
+                            let responseDataLatest = await node.config.session.getApplianceDataLatest(
+                                node.applianceIds.locationId,
+                                node.applianceIds.roomId,
+                                node.applianceIds.applianceId);
+                            let dataLatest = JSON.parse(responseDataLatest.text);
+
                             // For Debugging only
                             if (msg.debug === true){
                                 let  debugMsg = {
@@ -482,6 +501,10 @@ module.exports = function (RED) {
                                 result.statistics = convertData(data.data);
                             }
 
+                            if(dataLatest != null){
+                                result.dataLatest = dataLatest;
+                            }
+
                             if (info[0].type === ondusApi.OndusType.SenseGuard) {
                                 let response4 = await node.config.session.getApplianceCommand(
                                     node.applianceIds.locationId,
@@ -491,7 +514,17 @@ module.exports = function (RED) {
                                 result.command = command.command;
                                 // Here timestamp could also be interessting in future.
                             }
-                        
+
+                            if (info[0].type === ondusApi.OndusType.BlueHome) {
+                                let response4 = await node.config.session.getApplianceCommand(
+                                    node.applianceIds.locationId,
+                                    node.applianceIds.roomId,
+                                    node.applianceIds.applianceId);
+                                let command = JSON.parse(response4.text);
+                                result.command = command.command;
+                                // Here timestamp could also be interessting in future.
+                            }
+
                             msg.payload = result;
                             node.send([msg]);
                             

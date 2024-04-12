@@ -292,6 +292,11 @@ class OndusSession {
         return this.get(url);
     }
 
+    getApplianceDataLatest(locationId, roomId, applianceId) {
+        let url = apiUrl + '/locations/' + locationId + '/rooms/' + roomId + '/appliances/' + applianceId + '/data/latest';
+        return this.get(url);
+    }
+
     getApplianceData(locationId, roomId, applianceId, fromDate, toDate, groupBy) {
         let url = apiUrl + '/locations/' + locationId + '/rooms/' + roomId + '/appliances/' + applianceId + '/data/aggregated';
 
@@ -479,12 +484,11 @@ let OndusType = {
     Sense : 101,
     SensePlus : 102,
     SenseGuard : 103,
-    // BlueHome : 104 // TODO
+    BlueHome : 104
 };
 
 
 exports.login = login;
 exports.logoff = logoff;
 exports.convertNotification = convertNotification;
-exports.OndusType = Object.freeze(OndusType); 
-
+exports.OndusType = Object.freeze(OndusType);

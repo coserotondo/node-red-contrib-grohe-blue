@@ -57,7 +57,7 @@
 			location: { value:"", type: "grohe location", required: true },
             room: { value:"", required: true },
             appliance: { value:"", required: true },
-            devicetype: { value: "101", required: true },
+            devicetype: { value: "104", required: true },
             description: { value:"" },
         },
         inputs: 1,
@@ -65,7 +65,7 @@
         icon: "grohe.png",
         paletteLabel: "sense",
         label: function () {
-            return this.description || this.appliance || "Grohe Sense";
+            return this.description || this.appliance || "Grohe Blue Home";
         },
         labelStyle: function() {
             return this.description?"node_label_italic":"";
@@ -95,6 +95,7 @@
               <option value="101">Sense</option>
               <option value="102">Sense Plus</option>
               <option value="103">Sense Guard</option>
+              <option value="104">Blue Home</option>
           </select>
         </div>
         </div>
