@@ -15,13 +15,15 @@
         "node-red",
         "grohe",
         "ondus",
-        "sense"
+        "sense",
+        "blue"
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/windkh/node-red-contrib-grohe-sense"
+        "url": "https://github.com/coserotondo/node-red-contrib-grohe-sense-blue"
     },
     "author": "Karl-Heinz Wind",
+    "contributor": "coserotondo",
     "license": "MIT",
     "dependencies": {
         "he": "^1.2.0",
