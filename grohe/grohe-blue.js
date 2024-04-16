@@ -1,10 +1,11 @@
 /**
 * Created by Karl-Heinz Wind
+* Adapted by coserotondo
 **/
 
 module.exports = function (RED) {
     "use strict";
-    let ondusApi = require('./ondusApi.js');
+    let ondusApi = require('./ondus-api.js');
     	
     function sleep(ms) {
         return new Promise((resolve) => {
