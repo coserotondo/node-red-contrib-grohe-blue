@@ -30,19 +30,19 @@ The original code is from:
 # Grohe Blue Node
 The node is able to get the status of a Grohe Blue Home device.
 
-To get the status simply send any msg.payload to the input.
+To get the status simply send any msg.payload to the input. 
 
-To get updated measurement, add a function node before the Groe Blue Node with the following payload:
+To send a command, add a function node before the Groe Blue Node with the following payload:
 
 ```
 msg.payload = {  
     command : {
-        co2_status_reset: false,
-        tap_type: 0,
+        co2_status_reset: false, 
+        tap_type: 0, // 1 = still water , 2 = medium water, 3 = carbonated water
         cleaning_mode: false,
         filter_status_reset: false,
         get_current_measurement: true
-        tap_amount: 0,
+        tap_amount: 0, // milliliters
         factory_reset: false,
         revoke_flush_confirmation: false,
         exec_auto_flush: false
@@ -51,6 +51,19 @@ msg.payload = {
 
 return msg;
 ```
+Be aware that the measurement retrieved are not the latest ones and you have to send a command for this.
+E.g., to get the latest measurement:
+
+```
+msg.payload = {  
+    command : {
+        get_current_measurement: true
+    }
+};
+
+return msg;
+```
+In this case, the node try to wait until the timestamp for the latest measurement is older than the timestamp of the command issued.
 
 # License
 

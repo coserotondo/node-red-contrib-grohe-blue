@@ -209,7 +209,7 @@ module.exports = function (RED) {
                                 let i = 0;
                                 let eventTime = 0;
                                 // Try to wait to get the latest measurement from device
-                                if (msg.payload.command.get_current_measurement = true){
+                                if (msg.payload.command.get_current_measurement == true){
                                     node.warn("get_current_measurement");
                                     do {
                                         await sleep(1000 + (i * 1000));
