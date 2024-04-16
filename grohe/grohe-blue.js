@@ -31,204 +31,6 @@ module.exports = function (RED) {
         return convertedStatus;
     }
 
-    function getMin(newValue, oldValue) {   
-        if (isNaN(oldValue)) {
-            return newValue;
-        }                   
-        if (newValue < oldValue) {
-            return newValue;
-        }
-        else {
-            return oldValue;
-        }
-    }
-
-    function getMax(newValue, oldValue) { 
-        if (isNaN(oldValue)) {
-            return newValue;
-        }                 
-        if (newValue > oldValue) {
-            return newValue;
-        }
-        else {
-            return oldValue;
-        }
-    }
-
-    function convertMeasurement(measurement) {
-        let minTemperature = Number.NaN;
-        let maxTemperature = Number.NaN;
-        let minTemperatureGuard = Number.NaN;
-        let maxTemperatureGuard = Number.NaN;
-        let minHumidity = Number.NaN;
-        let maxHumidity = Number.NaN;
-        let minFlowrate = Number.NaN;
-        let maxFlowrate = Number.NaN;
-        let minPressure = Number.NaN;
-        let maxPressure = Number.NaN;
-        
-        let length = measurement.length;
-        for (let i=0; i < length; i++) {
-            let item = measurement[i];
-
-            let temperature = item.temperature;
-            minTemperature = getMin(temperature, minTemperature);
-            maxTemperature = getMax(temperature, maxTemperature);
-
-            let temperatureGuard = item.temperature_guard;
-            minTemperatureGuard = getMin(temperatureGuard, minTemperatureGuard);
-            maxTemperatureGuard = getMax(temperatureGuard, maxTemperatureGuard);
-
-            let humidity = item.humidity;
-            minHumidity = getMin(humidity, minHumidity);
-            maxHumidity = getMax(humidity, maxHumidity);
-            
-            let flowrate = item.flowrate;
-            minFlowrate = getMin(flowrate, minFlowrate);
-            maxFlowrate = getMax(flowrate, maxFlowrate);
-    
-            let pressure = item.pressure;
-            minPressure = getMin(pressure, minPressure);
-            maxPressure = getMax(pressure, maxPressure);
-        }
-
-        let from = measurement[0].date;
-        let to = measurement[length - 1].date;
-        let duration = (new Date(from) - new Date(to)) / 1000;
-            
-        let convertedMeasurement = {
-            from : from,
-            to : to,
-            duration : duration,
-            count : length,
-        }
-
-        if (!isNaN(minTemperature)){
-            convertedMeasurement.temperature = {
-                min : minTemperature,
-                max : maxTemperature,
-            }
-        }
-
-        if (!isNaN(minTemperatureGuard)){
-            convertedMeasurement.temperatureGuard = {
-                min : minTemperatureGuard,
-                max : maxTemperatureGuard,
-            }
-        }
-
-        if (!isNaN(minHumidity)){
-            convertedMeasurement.humidity = {
-                min : minHumidity,
-                max : maxHumidity
-            }
-        }
-
-        if (!isNaN(minFlowrate)){
-            convertedMeasurement.flowrate = {
-                min : minFlowrate,
-                max : maxFlowrate,
-            }
-        }
-         
-        if (!isNaN(minPressure)){
-            convertedMeasurement.pressure = {
-                min : minPressure,
-                max : maxPressure,
-            }
-        }
-
-        return convertedMeasurement;
-    }
-    
-    function convertWithdrawals(withdrawals) {
-
-        let totalWaterConsumption = 0;
-        let totalWaterCost = 0;
-        let totalEnerygCost = 0;
-        let totalHotwaterShare = 0;
-        let totalMaxFlowrate = Number.NaN;
-        
-        let todayWaterConsumption = 0;
-        let todayWaterCost = 0;
-        let todayEnerygCost = 0;
-        let todayHotwaterShare = 0;
-        let todayMaxFlowrate = Number.NaN;
-        
-        let length = withdrawals.length;
-        if(length > 0) {
-            let todayDate = withdrawals[0].date;
-            let today = new Date(new Date(todayDate).toDateString());
-    
-            for (let i=0; i < length; i++) {
-                let item = withdrawals[i];
-    
-                let date = new Date(item.date);
-                totalWaterConsumption += item.waterconsumption;
-                totalWaterCost += item.water_cost;
-                totalEnerygCost += item.energy_cost;
-                totalHotwaterShare += item.hotwater_share;
-                let flowrate = item.maxflowrate;
-                totalMaxFlowrate = getMax(flowrate, totalMaxFlowrate);
-    
-                if(date >= today) {
-                    todayWaterConsumption += item.waterconsumption;
-                    todayWaterCost += item.water_cost;
-                    todayEnerygCost += item.energy_cost;
-                    todayHotwaterShare += item.hotwater_share;
-                    todayMaxFlowrate = getMax(flowrate, todayMaxFlowrate);
-                }
-            }
-        }
-
-        let convertWithdrawals = {
-            from : withdrawals[0].date,
-            to : withdrawals[length - 1].date,
-            count : length,
-            totalWaterConsumption : totalWaterConsumption,
-            totalWaterCost : totalWaterCost,
-            totalEnerygCost : totalEnerygCost,
-            totalHotwaterShare : totalHotwaterShare,
-            todayWaterConsumption : todayWaterConsumption,
-            todayWaterCost : todayWaterCost,
-            todayEnerygCost : todayEnerygCost,
-            todayHotwaterShare : todayHotwaterShare 
-        }
-
-        if (!isNaN(totalMaxFlowrate)){
-            convertWithdrawals.totalMaxFlowrate = totalMaxFlowrate;
-        }
-
-        if (!isNaN(todayMaxFlowrate)){
-            convertWithdrawals.todayMaxFlowrate = todayMaxFlowrate;
-        }
-
-        return convertWithdrawals;
-    }
-
-    // Calculates statistics for a measurement data object. 
-    function convertData(data) {
-        let statistics = {};
-
-        let measurement = data.measurement;
-        if (measurement) {
-            let length = measurement.length;
-            if (length > 0){
-                statistics.measurement = convertMeasurement(measurement);
-            }
-        }
-
-        let withdrawals = data.withdrawals;
-        if (withdrawals) {
-            let length = withdrawals.length;
-            if (length > 0){
-                statistics.withdrawals = convertWithdrawals(withdrawals);
-            }
-        }
-
-        return statistics;
-    }
-
     // Converts notifications to a notification with text. 
     function convertNotifications(notifications) {
         let convertedNotifications = [];
@@ -402,22 +204,27 @@ module.exports = function (RED) {
                                     node.applianceIds.roomId,
                                     node.applianceIds.applianceId,
                                     data);
+                                // Hint: response is not used right now.
+                                
                                 let i = 0;
                                 let eventTime = 0;
-                                do {
-                                    await sleep(1000 + (i * 1000));
-                                    i += 10;
-                                    let responseDataLatest = await node.config.session.getApplianceDataLatest(
-                                        node.applianceIds.locationId,
-                                        node.applianceIds.roomId,
-                                        node.applianceIds.applianceId);
-                                    let dataLatest = JSON.parse(responseDataLatest.text);
-                                    let measurementTimestamp = dataLatest.data_latest.measurement.timestamp;
-                                    let eventDate = new Date(measurementTimestamp);
-                                    eventTime = eventDate.getTime()
-                                } while (i < 5 && eventTime < startTime);
+                                // Try to wait to get the latest measurement from device
+                                if (msg.payload.command.get_current_measurement = true){
+                                    node.warn("get_current_measurement");
+                                    do {
+                                        await sleep(1000 + (i * 1000));
+                                        i += 10;
+                                        let responseDataLatest = await node.config.session.getApplianceDataLatest(
+                                            node.applianceIds.locationId,
+                                            node.applianceIds.roomId,
+                                            node.applianceIds.applianceId);
+                                        let dataLatest = JSON.parse(responseDataLatest.text);
+                                        let measurementTimestamp = dataLatest.data_latest.measurement.timestamp;
+                                        let eventDate = new Date(measurementTimestamp);
+                                        eventTime = eventDate.getTime()
+                                    } while (i < 9 && eventTime < startTime);
+                                }
 
-                                // Hint: response is not used right now.
                             }
 
                             let responseDetails = await node.config.session.getApplianceDetails(
