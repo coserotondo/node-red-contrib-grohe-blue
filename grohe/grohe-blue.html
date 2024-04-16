@@ -50,8 +50,8 @@
 <!-- ------------------------------------------------------------------------------------------ -->
 
 <script type="text/javascript">
-    RED.nodes.registerType('grohe sense', {
-        category: 'Grohe Sense',
+    RED.nodes.registerType('grohe blue home', {
+        category: 'Grohe Blue Home',
         color: '#8DCEEB',
         defaults: {
 			location: { value:"", type: "grohe location", required: true },
@@ -63,7 +63,7 @@
         inputs: 1,
         outputs: 1,
         icon: "grohe.png",
-        paletteLabel: "sense",
+        paletteLabel: "blue home",
         label: function () {
             return this.description || this.appliance || "Grohe Blue Home";
         },
@@ -74,7 +74,7 @@
 
 </script>
 
-<script type="text/x-red" data-template-name="grohe sense">
+<script type="text/x-red" data-template-name="grohe blue home">
     <div class="form-row">
         <label for="node-input-location"><i class="fa fa-home"></i> Location</label>
         <input type="text" id="node-input-location" placeholder="The name of your location">
@@ -92,9 +92,6 @@
         <div style="display: inline-block; position: relative; width: 70%; height: 19.1333px;">
         <div style="position: absolute; left: 0; right: 0;">
           <select id="node-input-devicetype" style="width:100%">
-              <option value="101">Sense</option>
-              <option value="102">Sense Plus</option>
-              <option value="103">Sense Guard</option>
               <option value="104">Blue Home</option>
           </select>
         </div>
@@ -106,8 +103,8 @@
     </div>  
 </script>
 
-<script type="text/x-red" data-help-name="grohe sense">
-    <p>A node that controls a grohe sense device.</p>
+<script type="text/x-red" data-help-name="grohe blue home">
+    <p>A node that controls a grohe blue home device.</p>
 
     <h3>Configuration</h3>
     
@@ -123,5 +120,4 @@
     <p>.</p>
     <p><code>msg.payload</code></p>
 </script>
-
 

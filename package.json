@@ -1,7 +1,7 @@
 {
-    "name": "node-red-contrib-grohe-sense",
-    "version": "0.19.0",
-    "description": "Grohe sense nodes via ondus API.",
+    "name": "node-red-contrib-grohe-blue",
+    "version": "0.1.0",
+    "description": "Grohe Blue Home nodes via ondus API.",
     "node-red": {
 	    "version": ">=0.1.0",
 	    "nodes": {
@@ -15,15 +15,13 @@
         "node-red",
         "grohe",
         "ondus",
-        "sense",
         "blue"
     ],
     "repository": {
         "type": "git",
         "url": "https://github.com/coserotondo/node-red-contrib-grohe-sense-blue"
     },
-    "author": "Karl-Heinz Wind",
-    "contributor": "coserotondo",
+    "author": "Rodolfo Rotondo",
     "license": "MIT",
     "dependencies": {
         "he": "^1.2.0",

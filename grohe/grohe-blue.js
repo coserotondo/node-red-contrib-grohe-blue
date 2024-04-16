@@ -6,6 +6,12 @@ module.exports = function (RED) {
     "use strict";
     let ondusApi = require('./ondusApi.js');
     	
+    function sleep(ms) {
+        return new Promise((resolve) => {
+          setTimeout(resolve, ms);
+        });
+      }
+
     // check if the input is already a date, if not it is probably a value in milliseconds. 
     function convertToDate(input) {
         let date = new Date(input);
@@ -357,8 +363,8 @@ module.exports = function (RED) {
 	
 	
     // --------------------------------------------------------------------------------------------
-    // The sense node controls a grohe sense.
-    function GroheSenseNode(config) {
+    // The blue home node controls a grohe blue home.
+    function GroheBlueHomeNode(config) {
         RED.nodes.createNode(this, config);
         let node = this;
         node.location = config.location;
@@ -385,44 +391,34 @@ module.exports = function (RED) {
                         {
                             node.status({ fill: 'green', shape: 'ring', text: 'updating...' });
 
-                            if(node.devicetype === ondusApi.OndusType.SenseGuard){
-                                if (msg.payload !== undefined && msg.payload.command !== undefined){
-                                    let data = msg.payload;
-                                    data.type = node.devicetype;
-                                    let response = await node.config.session.setApplianceCommand(
+                            if (msg.payload !== undefined && msg.payload.command !== undefined){
+                                let data = msg.payload;
+                                data.type = node.devicetype;
+                                let startDate = new Date();
+                                let startTime = startDate.getTime()
+                                let response = await node.config.session.setApplianceCommand(
+                                    node.applianceIds.locationId,
+                                    node.applianceIds.roomId,
+                                    node.applianceIds.applianceId,
+                                    data);
+                                let i = 0;
+                                let eventTime = 0;
+                                do {
+                                    await sleep(1000 + (i * 1000));
+                                    i += 10;
+                                    let responseDataLatest = await node.config.session.getApplianceDataLatest(
                                         node.applianceIds.locationId,
                                         node.applianceIds.roomId,
-                                        node.applianceIds.applianceId,
-                                        data);
-                                    // Hint: response is not used right now.
-                                }
+                                        node.applianceIds.applianceId);
+                                    let dataLatest = JSON.parse(responseDataLatest.text);
+                                    let measurementTimestamp = dataLatest.data_latest.measurement.timestamp;
+                                    let eventDate = new Date(measurementTimestamp);
+                                    eventTime = eventDate.getTime()
+                                } while (i < 5 && eventTime < startTime);
+
+                                // Hint: response is not used right now.
                             }
 
-                            if(node.devicetype === ondusApi.OndusType.BlueHome){
-                                if (msg.payload !== undefined && msg.payload.command !== undefined){
-                                    let data = msg.payload;
-                                    data.type = node.devicetype;
-                                    let response = await node.config.session.setApplianceCommand(
-                                        node.applianceIds.locationId,
-                                        node.applianceIds.roomId,
-                                        node.applianceIds.applianceId,
-                                        data);
-                                    // Hint: response is not used right now.
-                                }
-                            }
-
-                            let responseInfo = await node.config.session.getApplianceInfo(
-                                node.applianceIds.locationId,
-                                node.applianceIds.roomId,
-                                node.applianceIds.applianceId);
-                            let info = JSON.parse(responseInfo.text);
-                            
-                            let responseStatus = await node.config.session.getApplianceStatus(
-                                node.applianceIds.locationId,
-                                node.applianceIds.roomId,
-                                node.applianceIds.applianceId);
-                            let status = JSON.parse(responseStatus.text);
-                            
                             let responseDetails = await node.config.session.getApplianceDetails(
                                 node.applianceIds.locationId,
                                 node.applianceIds.roomId,
@@ -434,61 +430,31 @@ module.exports = function (RED) {
                                 node.applianceIds.roomId,
                                 node.applianceIds.applianceId);
                             let notifications = JSON.parse(responseNotifications.text);
-   
-                            let data;
-                            if(msg.payload !== undefined && msg.payload.data !== undefined ){
-                                let fromDate = convertToDate(msg.payload.data.from);
-                                let toDate = convertToDate(msg.payload.data.to);
-                                let groupBy = msg.payload.data.groupBy;
-                                try {
-                                    let responseData = await node.config.session.getApplianceData(
-                                        node.applianceIds.locationId,
-                                        node.applianceIds.roomId,
-                                        node.applianceIds.applianceId,
-                                        fromDate,
-                                        toDate,
-                                        groupBy);
-                                    data = JSON.parse(responseData.text);
-                                }
-                                catch(exception){
-                                    let errorMessage = 'getApplianceData failed: ' + exception.message;
-                                    node.error(errorMessage, msg);
-                                    node.status({ fill: 'red', shape: 'ring', text: 'failed' });
-                                }
-                            }
-
-                            let responseDataLatest = await node.config.session.getApplianceDataLatest(
-                                node.applianceIds.locationId,
-                                node.applianceIds.roomId,
-                                node.applianceIds.applianceId);
-                            let dataLatest = JSON.parse(responseDataLatest.text);
 
                             // For Debugging only
                             if (msg.debug === true){
                                 let  debugMsg = {
                                     debug : {
                                         applianceIds : node.applianceIds,
-                                        info : info,
-                                        status : status,
                                         details : details,
-                                        notifications : notifications,
-                                        applianceData : data
+                                        notifications : notifications
                                     }
                                 };
                                 node.warn(debugMsg);
                             }
 
                             let result = {};
-
-                            if(info != null){
-                                result.info = info;
-                            }
-
-                            if(status != null){
-                                result.status = convertStatus(status);
-                            }
                             
                             if(details != null){
+                                if(details.info != null){
+                                    result.info = details.info;
+                                }
+                                if(details.status != null){
+                                    result.status = convertStatus(details.status);
+                                }
+                                if(details.data_latest.measurement != null){
+                                    result.measurement = details.data_latest.measurement;
+                                }
                                 result.details = details;
                             }
 
@@ -496,35 +462,14 @@ module.exports = function (RED) {
                                 result.notifications = convertNotifications(notifications);
                             }
 
-                            if(data != null){
-                                result.data = data.data;
-                                result.statistics = convertData(data.data);
-                            }
-
-                            if(dataLatest != null){
-                                result.dataLatest = dataLatest;
-                            }
-
-                            if (info[0].type === ondusApi.OndusType.SenseGuard) {
-                                let response4 = await node.config.session.getApplianceCommand(
-                                    node.applianceIds.locationId,
-                                    node.applianceIds.roomId,
-                                    node.applianceIds.applianceId);
-                                let command = JSON.parse(response4.text);
-                                result.command = command.command;
-                                // Here timestamp could also be interessting in future.
-                            }
-
-                            if (info[0].type === ondusApi.OndusType.BlueHome) {
-                                let response4 = await node.config.session.getApplianceCommand(
-                                    node.applianceIds.locationId,
-                                    node.applianceIds.roomId,
-                                    node.applianceIds.applianceId);
-                                let command = JSON.parse(response4.text);
-                                result.command = command.command;
-                                // Here timestamp could also be interessting in future.
-                            }
-
+                            let response4 = await node.config.session.getApplianceCommand(
+                                node.applianceIds.locationId,
+                                node.applianceIds.roomId,
+                                node.applianceIds.applianceId);
+                            let command = JSON.parse(response4.text);
+                            result.command = command.command;
+                            result.commandTimestamp = command.timestamp;
+                        
                             msg.payload = result;
                             node.send([msg]);
                             
@@ -575,5 +520,5 @@ module.exports = function (RED) {
             node.status({ fill: 'red', shape: 'ring', text: 'no config' });
         }
     }
-    RED.nodes.registerType("grohe sense", GroheSenseNode);
+    RED.nodes.registerType("grohe blue home", GroheBlueHomeNode);
 }
