@@ -1,6 +1,6 @@
 {
     "name": "node-red-contrib-grohe-blue",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "Grohe Blue Home nodes via ondus API.",
     "node-red": {
 	    "version": ">=0.1.0",
