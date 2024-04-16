@@ -5,7 +5,7 @@
     "node-red": {
 	    "version": ">=0.1.0",
 	    "nodes": {
-            "grohe": "grohe/99-grohe.js"
+            "grohe": "grohe/grohe-blue.js"
         }
     },
 	"engines": {
@@ -19,9 +19,10 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/coserotondo/node-red-contrib-grohe-sense-blue"
+        "url": "https://github.com/coserotondo/node-red-contrib-grohe-blue"
     },
-    "author": "Rodolfo Rotondo",
+    "author": "Karl-Heinz Wind",
+    "contributor": "coserotondo",
     "license": "MIT",
     "dependencies": {
         "he": "^1.2.0",
