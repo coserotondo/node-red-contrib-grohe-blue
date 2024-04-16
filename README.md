@@ -1,4 +1,4 @@
-# Grohe Sense nodes for node-red
+# Grohe Blue Home nodes for node-red
 
 This package contains nodes for controlling Grohe Blue Home devices via the following API:
 https://idp2-apigw.cloud.grohe.com
