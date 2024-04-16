@@ -26,7 +26,7 @@ https://github.com/faune/homebridge-grohe-sense
 - FlorianSW for developing the initial version in JAVA
 - J0EK3R for porting the original JAVA implementation to C#
 - faune for doing the great work in TypeScript. This made me port my code from axios to superagent. 
-- windkh from which the code is based
+- windkh from whom the code is forked
 
 
 
