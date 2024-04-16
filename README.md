@@ -51,8 +51,7 @@ msg.payload = {
 
 return msg;
 ```
-Be aware that the measurement retrieved are not the latest ones and you have to send a command for this.
-E.g., to get the latest measurement:
+Be aware that the measurement retrieved are not the latest ones and you have to send a command for this:
 
 ```
 msg.payload = {  
