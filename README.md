@@ -20,12 +20,10 @@ The code was ported from C# and Java and TypeScript which can be found here:
 https://github.com/J0EK3R/Grohe.Ondus.Api
 https://github.com/FlorianSW/grohe-ondus-api-java
 https://github.com/faune/homebridge-grohe-sense
-
+The original code is from:
+https://github.com/windkh/node-red-contrib-grohe-sense
 
 # Credits
-- FlorianSW for developing the initial version in JAVA
-- J0EK3R for porting the original JAVA implementation to C#
-- faune for doing the great work in TypeScript. This made me port my code from axios to superagent. 
 - windkh from whom the code is forked
 
 
