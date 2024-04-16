@@ -1,6 +1,6 @@
 # Grohe Sense nodes for node-red
 
-This package contains nodes for controlling grohe Blue Home devices via the following API:
+This package contains nodes for controlling Grohe Blue Home devices via the following API:
 https://idp2-apigw.cloud.grohe.com
 
 
@@ -17,20 +17,40 @@ It is for demonstrating how to communicate to the devices using node-red.
 Use on your own risk!
 
 The code was ported from C# and Java and TypeScript which can be found here:
-
-https://github.com/J0EK3R/Grohe.Ondus.Api
-https://github.com/FlorianSW/grohe-ondus-api-java
-https://github.com/faune/homebridge-grohe-sense
+* https://github.com/J0EK3R/Grohe.Ondus.Api
+* https://github.com/FlorianSW/grohe-ondus-api-java
+* https://github.com/faune/homebridge-grohe-sense
 
 The original code is from:
-https://github.com/windkh/node-red-contrib-grohe-sense
+* https://github.com/windkh/node-red-contrib-grohe-sense
 
 # Credits
-- windkh from whom the code is forked
+- windkh from whom the code is forked and simplified to support only Grohe Blue Home.
 
+# Grohe Blue Node
+The node is able to get the status of a Grohe Blue Home device.
 
+To get the status simply send any msg.payload to the input.
 
+To get updated measurement, add a function node before the Groe Blue Node with the following payload:
 
+```
+msg.payload = {  
+    command : {
+        co2_status_reset: false,
+        tap_type: 0,
+        cleaning_mode: false,
+        filter_status_reset: false,
+        get_current_measurement: true
+        tap_amount: 0,
+        factory_reset: false,
+        revoke_flush_confirmation: false,
+        exec_auto_flush: false
+    }
+};
+
+return msg;
+```
 
 # License
 
