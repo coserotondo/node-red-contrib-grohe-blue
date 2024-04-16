@@ -17,9 +17,11 @@ It is for demonstrating how to communicate to the devices using node-red.
 Use on your own risk!
 
 The code was ported from C# and Java and TypeScript which can be found here:
+
 https://github.com/J0EK3R/Grohe.Ondus.Api
 https://github.com/FlorianSW/grohe-ondus-api-java
 https://github.com/faune/homebridge-grohe-sense
+
 The original code is from:
 https://github.com/windkh/node-red-contrib-grohe-sense
 
